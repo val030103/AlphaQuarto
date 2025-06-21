@@ -1,0 +1,80 @@
+# General Ignore Rules for Python
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class # For Jython
+*.egg
+*.egg-info/
+.coverage
+.cache
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Virtual environment
+# This is crucial! Never commit your virtual environment.
+# Common names for virtual environment folders:
+venv/
+env/
+.venv/
+.env/ # Sometimes used for environment variables, but often also for venv
+# If you use a different name for your venv, add it here (e.g., my_quarto_env/)
+
+# Distribution / packaging
+build/
+dist/
+*.whl
+*.egg-info/
+
+# Logs and databases
+*.log
+*.sqlite3 # If you use SQLite for a local database
+db.sqlite3 # Common for Django, might appear in other projects
+db.sqlite3-journal # Temporary file for SQLite
+
+# OS-specific files (especially macOS)
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Desktop.ini # Windows equivalent
+Thumbs.db # Windows equivalent
+
+# IDE-specific files
+.idea/           # JetBrains IDEs (PyCharm, IntelliJ, etc.)
+.vscode/         # VS Code settings and temporary files
+*.sublime-project # Sublime Text
+*.sublime-workspace
+.project         # Eclipse
+.classpath
+.settings/
+*.komodoproject  # Komodo IDE
+
+# Miscellaneous
+# Generated documentation
+docs/_build/
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# Any saved AI models, as they can be large and are generated artifacts
+# Adjust the path if your 'models' folder is nested differently
+/src/agent/models/
+# Or if it's directly in src/: /src/models/
+
+# Specific files you might generate or not want to track locally
+# E.g., if you have a sensitive config file not to be committed:
+# config.ini
+# local_settings.py
+
+# If you have specific data files you don't want to track
+# data/processed/
+# data/raw/
