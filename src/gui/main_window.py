@@ -1,121 +1,70 @@
 import tkinter as tk
-from tkinter import Menu, messagebox
+from src.gui.game_view import GameView
+from src.gui.controllers import GUIController
+from src.game.game_controller import GameController
+from src.players.human_player import HumanPlayer
 
 class MainWindow(tk.Tk):
-    def __init__(self, game_manager=None, agent_trainer=None):
-        """
-        Initializes the main application window.
-
-        Args:
-            game_manager: An instance of a class that manages game logic (e.g., from src.game).
-            agent_trainer: An instance of a class that handles agent training (e.g., from src.agent.train_agent).
-        """
+    def __init__(self):
         super().__init__()
-        self.title("Quarto AI")
-        self.geometry("800x600") # Set a default size for the window
+        self.title("AlphaQuarto")
+        
+        window_width = 1000
+        window_height = 800
 
-        # Store references to managers if passed
-        self.game_manager = game_manager
-        self.agent_trainer = agent_trainer
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        center_x = int(screen_width/2 - window_width/2)
+        center_y = int(screen_height/2 - window_height/2)
+        self.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+        self.configure(bg='#333')
 
-        self._create_menu_bar()
-        self._create_main_layout()
+        self._current_view = None
+        self._main_menu_frame = None  # Keep a reference to the main menu
+        self._setup_main_menu()
 
-    def _create_menu_bar(self):
-        """
-        Creates the main menu bar for the application.
-        """
-        menubar = Menu(self)
-        self.config(menu=menubar)
+        self.lift()
+        self.attributes('-topmost', True)
+        self.after_idle(self.attributes, '-topmost', False)
+        self.focus_force()
 
-        # --- Game Menu ---
-        game_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Game", menu=game_menu)
-        game_menu.add_command(label="New Human vs. Human Game", command=self._start_human_vs_human_game)
-        game_menu.add_command(label="New Human vs. AI Game", command=self._start_human_vs_ai_game)
-        game_menu.add_command(label="New AI vs. AI Game", command=self._start_ai_vs_ai_game)
-        game_menu.add_separator()
-        game_menu.add_command(label="Exit", command=self.quit)
+    def _clear_view(self):
+        """Destroys the current view."""
+        if self._current_view:
+            self._current_view.destroy()
+            self._current_view = None
+        if self._main_menu_frame:
+            self._main_menu_frame.destroy()
+            self._main_menu_frame = None
 
-        # --- Agent Menu ---
-        agent_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Agent", menu=agent_menu)
-        agent_menu.add_command(label="Train AlphaQuarto Agent", command=self._train_alpha_quarto_agent)
-        agent_menu.add_command(label="Load Trained Agent", command=self._load_trained_agent)
-        agent_menu.add_command(label="Save Current Agent", command=self._save_current_agent) # Implement save later
+    def _setup_main_menu(self):
+        """Sets up the initial menu."""
+        self._clear_view()
 
-        # --- Help Menu ---
-        help_menu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="About", command=self._show_about_dialog)
+        self._main_menu_frame = tk.Frame(self, bg='#333')
+        self._main_menu_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        
+        welcome_label = tk.Label(self._main_menu_frame, text="Welcome to AlphaQuarto", font=("Helvetica", 24, "bold"), fg='white', bg='#333')
+        welcome_label.pack(pady=20)
 
-    def _create_main_layout(self):
-        """
-        Creates the main layout of the window where game view and controls will go.
-        """
-        # This is a placeholder. You'll replace this with your actual game board
-        # and control widgets from game_view.py and other UI elements.
-        self.main_frame = tk.Frame(self, bg="white")
-        self.main_frame.pack(expand=True, fill="both", padx=10, pady=10)
+        game_button = tk.Button(self._main_menu_frame, text="Start Human vs. Human Game", command=self._on_game_button_click, font=("Helvetica", 14), width=30)
+        game_button.pack(pady=20, ipady=10)
 
-        welcome_label = tk.Label(self.main_frame, text="Welcome to Quarto AI!", font=("Arial", 24), bg="black")
-        welcome_label.pack(pady=50)
+    def _on_game_button_click(self):
+        """Callback function when the game button is clicked."""
+        self._show_game_view()
+    
+    def _show_game_view(self):
+        """Displays the game view and hides the main menu."""
+        self._clear_view()
 
-        instruction_label = tk.Label(self.main_frame, text="Use the 'Game' menu to start a new game.", font=("Arial", 14), bg="black")
-        instruction_label.pack(pady=20)
+        # 1. Create Model and Player objects
+        player1 = HumanPlayer("Player 1")
+        player2 = HumanPlayer("Player 2")
+        game_controller = GameController(player1, player2)
 
-
-    # --- Menu Command Callbacks ---
-    def _start_human_vs_human_game(self):
-        """Starts a new human vs. human game."""
-        messagebox.showinfo("Game Mode", "Starting new Human vs. Human game...")
-        # Placeholder: Call self.game_manager.start_game(player1_type="human", player2_type="human")
-        # Then update your game_view to display the board.
-
-    def _start_human_vs_ai_game(self):
-        """Starts a new human vs. AI game."""
-        messagebox.showinfo("Game Mode", "Starting new Human vs. AI game...")
-        # Placeholder: Call self.game_manager.start_game(player1_type="human", player2_type="ai")
-
-    def _start_ai_vs_ai_game(self):
-        """Starts a new AI vs. AI game."""
-        messagebox.showinfo("Game Mode", "Starting new AI vs. AI game...")
-        # Placeholder: Call self.game_manager.start_game(player1_type="ai", player2_type="ai")
-
-    def _train_alpha_quarto_agent(self):
-        """Initiates the Q-learning agent training process."""
-        messagebox.showinfo("Agent Training", "Starting AlphaQuarto agent training... (Check console for progress)")
-        # Placeholder: Call self.agent_trainer.train() if agent_trainer is provided
-        if self.agent_trainer:
-            # You might want to run this in a separate thread to keep the GUI responsive
-            # For simplicity, we'll just call it directly for now.
-            # In a real app, use threading or async.
-            self.agent_trainer.train_agent()
-            messagebox.showinfo("Agent Training", "AlphaQuarto agent training completed!")
-        else:
-            messagebox.showerror("Error", "Agent trainer not initialized!")
-
-
-    def _load_trained_agent(self):
-        """Loads a pre-trained agent model."""
-        messagebox.showinfo("Agent Management", "Loading trained agent...")
-        # Placeholder: Implement file dialog to select model, then load via agent_trainer
-
-    def _save_current_agent(self):
-        """Saves the current state of the agent model."""
-        messagebox.showinfo("Agent Management", "Saving current agent...")
-        # Placeholder: Implement save dialog to choose location, then save via agent_trainer
-
-    def _show_about_dialog(self):
-        """Displays an about dialog."""
-        messagebox.showinfo(
-            "About Quarto AI",
-            "Quarto AI Project\n\nDeveloped by [Your Name/Team Name]\nVersion 1.0\n\nAn AI agent learning to master the game of Quarto using Q-learning."
-        )
-
-# This part is crucial for main.py to run the GUI
-if __name__ == "__main__":
-    # When testing main_window.py directly, you can run it like this:
-    # However, in your actual project, main.py will be the entry point.
-    app = MainWindow()
-    app.mainloop()
+        # 2. Create View
+        self._current_view = GameView(self)
+        
+        # 3. Create Controller to link them
+        GUIController(game_controller, self._current_view)
